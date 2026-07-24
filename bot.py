@@ -46,6 +46,9 @@ def find(message):
     if uid not in verified_users:
         bot.send_message(uid, "Сначала ответьте на вопрос /start")
         return
+    # Убираем пользователя из списка "не ищет"
+    if uid in not_searching:
+        not_searching.remove(uid)
     if uid in chats and chats[uid]:
         bot.send_message(uid, "Вы уже в чате. Используйте /next")
         return
@@ -68,6 +71,11 @@ def next_partner(message):
         chats[uid] = None
         if partner in chats:
             chats[partner] = None
+        # Добавляем обоих в список "не ищут"
+        if uid not in not_searching:
+            not_searching.append(uid)
+        if partner not in not_searching:
+            not_searching.append(partner)
         bot.send_message(uid, "🔚 Завершили чат. Ищем нового собеседника...\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
         bot.send_message(partner, "🔚 Собеседник завершил чат.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
     find_partner(uid)
@@ -80,6 +88,11 @@ def stop(message):
         chats[uid] = None
         if partner in chats:
             chats[partner] = None
+        # Добавляем обоих в список "не ищут"
+        if uid not in not_searching:
+            not_searching.append(uid)
+        if partner not in not_searching:
+            not_searching.append(partner)
         bot.send_message(uid, "🔚 Вы вышли из чата.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
         bot.send_message(partner, "🔚 Собеседник вышел из чата.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
     else:
@@ -100,6 +113,8 @@ def find_partner(uid):
         if other == uid:
             continue
         if chats[other] is not None:
+            continue
+        if other in not_searching:  # ← НОВАЯ ПРОВЕРКА
             continue
         if other not in verified_users:
             continue
@@ -134,19 +149,24 @@ def callback_handler(call):
         find_partner(uid)
         return
 
-@bot.message_handler(func=lambda msg: True)
+@bot.message_handler(func=lambda msg: True, content_types=['text', 'sticker'])
 def handle_messages(message):
     uid = message.chat.id
-    text = message.text.lower().strip()
+    text = message.text.lower().strip() if message.text else ""
+    
     if uid not in verified_users:
         if text in [ans.lower() for ans in SECRET_ANSWERS]:
             verified_users.append(uid)
-            bot.send_message(uid, "Верно! Теперь укажите ваш пол:", reply_markup=gender_keyboard())
+            bot.send_message(uid, "✅ Верно! Теперь укажите ваш пол:", reply_markup=gender_keyboard())
         else:
-            bot.send_message(uid, f"Неверно. Попробуйте еще раз: {SECRET_QUESTION}")
+            bot.send_message(uid, f"❌ Неверно. Попробуйте еще раз:\n❓ {SECRET_QUESTION}")
         return
+    
     if uid in chats and chats[uid]:
-        bot.send_message(chats[uid], message.text)
+        if message.sticker:
+            bot.send_sticker(chats[uid], message.sticker.file_id)
+        else:
+            bot.send_message(chats[uid], message.text)
     else:
         bot.send_message(uid, "Вы не в чате. Нажмите /find")
 
