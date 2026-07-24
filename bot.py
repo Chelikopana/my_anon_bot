@@ -113,11 +113,11 @@ def find_partner(uid):
             continue
         chats[other] = uid
         chats[uid] = other
-        bot.send_message(other, "Собеседник найден! Пишите анонимно.")
-        bot.send_message(uid, "Собеседник найден! Пишите анонимно.")
+        bot.send_message(other, "✅ Собеседник найден! Пишите анонимно.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
+        bot.send_message(uid, "✅ Собеседник найден! Пишите анонимно.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
         return
     chats[uid] = None
-    bot.send_message(uid, "Собеседник не найден. Попробуйте /settings")
+    bot.send_message(uid, "😔 Собеседник не найден. Попробуйте /settings")
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
