@@ -36,9 +36,9 @@ def preference_keyboard():
 def start(message):
     uid = message.chat.id
     if uid in verified_users:
-        bot.send_message(uid, "Вы уже авторизованы. Используйте /find")
+        bot.send_message(uid, "🔓 Вы уже авторизованы. Используйте /find")
         return
-    bot.send_message(uid, f"Добро пожаловать!\n\nОтветьте на вопрос: {SECRET_QUESTION}")
+    bot.send_message(uid, f"👋Приветсвую! Это AnonVirt Chat — место для анонимного общения, специально для виртовских.\n\n🔐 Никто не узнает, кто Вы.\n💬 Общайтесь без ограничений.\n\nЧтобы начать, ответьте на вопрос:\n❓ {SECRET_QUESTION}\n\nПодсказка: можно писать с 'ё' или 'е' — мы поймём! 😉")
 
 @bot.message_handler(commands=['find'])
 def find(message):
@@ -68,8 +68,8 @@ def next_partner(message):
         chats[uid] = None
         if partner in chats:
             chats[partner] = None
-        bot.send_message(uid, "Завершили чат. Ищем нового...")
-        bot.send_message(partner, "Собеседник завершил чат.")
+        bot.send_message(uid, "🔚 Завершили чат. Ищем нового собеседника...\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
+        bot.send_message(partner, "🔚 Собеседник завершил чат.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
     find_partner(uid)
 
 @bot.message_handler(commands=['stop'])
@@ -80,8 +80,8 @@ def stop(message):
         chats[uid] = None
         if partner in chats:
             chats[partner] = None
-        bot.send_message(uid, "Вы вышли из чата.")
-        bot.send_message(partner, "Собеседник вышел из чата.")
+        bot.send_message(uid, "🔚 Вы вышли из чата.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
+        bot.send_message(partner, "🔚 Собеседник вышел из чата.\n\n📌 Команды:\n/stop — выйти из чата\n/next — найти нового собеседника")
     else:
         bot.send_message(uid, "Вы не в чате.")
 
