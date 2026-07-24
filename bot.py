@@ -1,7 +1,7 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-TOKEN = "8641022610:AAFYZNq1YYx-eM9vcTRpZ7sgEg4UziEmHN4"
+TOKEN = "8641022610:AAF6TPxGbvZsZyJfipvh9p8xnSkVyoO6Vho"
 bot = telebot.TeleBot(TOKEN)
 
 SECRET_QUESTION = "Кто такой ЧБЧГ?"
