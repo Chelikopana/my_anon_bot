@@ -1,11 +1,16 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-TOKEN = "8641022610:AAFYZNq1YYx-eM9vcTRpZ7sgEq4UziEmHN4"
+TOKEN = "8641022610:AAFYZNq1YYx-eM9vcTRpZ7sgEg4UziEmHN4"
 bot = telebot.TeleBot(TOKEN)
 
 SECRET_QUESTION = "Кто такой ЧБЧГ?"
-SECRET_ANSWER = "чёрно-белый чонгук"
+SECRET_ANSWERS = [
+    "чёрно-белый чонгук",
+    "черно-белый чонгук",
+    "чёрно белый чонгук",
+    "черно белый чонгук"
+]
 
 verified_users = []
 user_gender = {}
@@ -134,7 +139,7 @@ def handle_messages(message):
     uid = message.chat.id
     text = message.text.lower().strip()
     if uid not in verified_users:
-        if text == SECRET_ANSWER.lower():
+        if text in [ans.lower() for ans in SECRET_ANSWERS]:
             verified_users.append(uid)
             bot.send_message(uid, "Верно! Теперь укажите ваш пол:", reply_markup=gender_keyboard())
         else:
