@@ -16,6 +16,7 @@ verified_users = []
 user_gender = {}
 user_preference = {}
 chats = {}
+not_searching = []
 
 def gender_keyboard():
     keyboard = InlineKeyboardMarkup(row_width=2)
