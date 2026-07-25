@@ -1,5 +1,5 @@
 import telebot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReactionTypeEmoji
 
 TOKEN = "8641022610:AAF6TPxGbvZsZyJfipvh9p8xnSkVyoO6Vho"
 bot = telebot.TeleBot(TOKEN)
@@ -171,6 +171,24 @@ def handle_messages(message):
     else:
         bot.send_message(uid, "Вы не в чате. Нажмите /find")
 
+@bot.message_handler(func=lambda message: True)
+def react_to_message(message):
+    # Игнорируем сообщения, которые пришли от самого бота (чтобы не было цикла)
+    if message.from_user.is_bot:
+        return
+
+    # Ставим реакцию 👍 на любое сообщение пользователя
+    try:
+        bot.set_message_reaction(
+            chat_id=message.chat.id,
+            message_id=message.id,
+            reaction=[ReactionTypeEmoji("👍")],
+            is_big=False  # Ставим маленькую, а не большую анимированную
+        )
+    except Exception as e:
+        # На всякий случай, чтобы бот не падал, если что-то пойдет не так
+        print(f"Не удалось поставить реакцию: {e}")
+        
 import threading
 import time
 
