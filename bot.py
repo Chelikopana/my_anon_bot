@@ -150,7 +150,7 @@ def callback_handler(call):
         find_partner(uid)
         return
 
-@bot.message_handler(func=lambda msg: True, content_types=['text', 'sticker'])
+@bot.message_handler(func=lambda msg: True, content_types=['text', 'sticker', 'photo', 'video', 'audio', 'document', 'voice', 'video_note', 'animation'])
 def handle_messages(message):
     uid = message.chat.id
     text = message.text.lower().strip() if message.text else ""
@@ -166,20 +166,45 @@ def handle_messages(message):
     if uid in chats and chats[uid]:
         partner = chats[uid]
         
-        # Если это стикер — пересылаем как стикер
-        if message.sticker:
+        # --- Обработка разных типов сообщений ---
+        
+        # Фото
+        if message.photo:
+            bot.send_photo(partner, message.photo[-1].file_id, caption=message.caption)
+        
+        # Видео
+        elif message.video:
+            bot.send_video(partner, message.video.file_id, caption=message.caption)
+        
+        # Аудио (музыка)
+        elif message.audio:
+            bot.send_audio(partner, message.audio.file_id, caption=message.caption)
+        
+        # Голосовые сообщения
+        elif message.voice:
+            bot.send_voice(partner, message.voice.file_id)
+        
+        # Документы (файлы)
+        elif message.document:
+            bot.send_document(partner, message.document.file_id, caption=message.caption)
+        
+        # Кружочки (видеосообщения)
+        elif message.video_note:
+            bot.send_video_note(partner, message.video_note.file_id)
+        
+        # GIF-анимации
+        elif message.animation:
+            bot.send_animation(partner, message.animation.file_id, caption=message.caption)
+        
+        # Стикеры
+        elif message.sticker:
             bot.send_sticker(partner, message.sticker.file_id)
-        else:
-            # Если есть ответ на сообщение (reply) — цитируем его
+        
+        # Текст
+        elif message.text:
             if message.reply_to_message:
-                # Отправляем текст с цитированием
-                bot.send_message(
-                    partner,
-                    message.text,
-                    reply_to_message_id=message.reply_to_message.message_id
-                )
+                bot.send_message(partner, message.text, reply_to_message_id=message.reply_to_message.message_id)
             else:
-                # Обычная отправка без цитирования
                 bot.send_message(partner, message.text)
     else:
         bot.send_message(uid, "Вы не в чате. Нажмите /find")
