@@ -164,10 +164,23 @@ def handle_messages(message):
         return
     
     if uid in chats and chats[uid]:
+        partner = chats[uid]
+        
+        # Если это стикер — пересылаем как стикер
         if message.sticker:
-            bot.send_sticker(chats[uid], message.sticker.file_id)
+            bot.send_sticker(partner, message.sticker.file_id)
         else:
-            bot.send_message(chats[uid], message.text)
+            # Если есть ответ на сообщение (reply) — цитируем его
+            if message.reply_to_message:
+                # Отправляем текст с цитированием
+                bot.send_message(
+                    partner,
+                    message.text,
+                    reply_to_message_id=message.reply_to_message.message_id
+                )
+            else:
+                # Обычная отправка без цитирования
+                bot.send_message(partner, message.text)
     else:
         bot.send_message(uid, "Вы не в чате. Нажмите /find")
 
